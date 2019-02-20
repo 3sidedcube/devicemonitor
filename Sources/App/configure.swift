@@ -1,6 +1,5 @@
 import FluentSQLite
 import Vapor
-import Ferno
 import FCM
 
 /// Called before your application initializes.

@@ -6,7 +6,6 @@
 //
 
 import Vapor
-import Ferno
 import FCM
 
 /// Controls basic CRUD operations on Cube users.
@@ -36,10 +35,19 @@ final class DevicesController {
         
         return try req.content.decode(Device.self).flatMap(to: Device.self, { (requestDevice) -> Future<Device> in
             
-            let dateFormatter = ISO8601DateFormatter()
+            var seenString: String?
+            if #available(OSX 10.12, *) {
+                let dateFormatter = ISO8601DateFormatter()
+                seenString = dateFormatter.string(from: Date())
+            } else {
+                // Fallback on earlier versions
+                let dateFormatter = DateFormatter()
+                dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssXXXXX"
+                seenString = dateFormatter.string(from: Date())
+            }
             let newDevice = Device(
                 name: nil,
-                seen: dateFormatter.string(from: Date()),
+                seen: seenString,
                 id: nil,
                 currentUserId: requestDevice.userId,
                 pluggedIn: nil,
@@ -92,10 +100,19 @@ final class DevicesController {
         
         return try req.content.decode(Device.self).flatMap(to: Device.self, { (requestDevice) -> Future<Device> in
             
-            let dateFormatter = ISO8601DateFormatter()
+            var seenString: String?
+            if #available(OSX 10.12, *) {
+                let dateFormatter = ISO8601DateFormatter()
+                seenString = dateFormatter.string(from: Date())
+            } else {
+                // Fallback on earlier versions
+                let dateFormatter = DateFormatter()
+                dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssXXXXX"
+                seenString = dateFormatter.string(from: Date())
+            }
             let newDevice = Device(
                 name: nil,
-                seen: dateFormatter.string(from: Date()),
+                seen: seenString,
                 id: nil,
                 currentUserId: requestDevice.userId,
                 pluggedIn: nil,
@@ -127,10 +144,20 @@ final class DevicesController {
         
         return try req.content.decode(Device.self).flatMap(to: Device.self, { (requestDevice) -> Future<Device> in
             
-            let dateFormatter = ISO8601DateFormatter()
+            var seenString: String?
+            if #available(OSX 10.12, *) {
+                let dateFormatter = ISO8601DateFormatter()
+                seenString = dateFormatter.string(from: Date())
+            } else {
+                // Fallback on earlier versions
+                let dateFormatter = DateFormatter()
+                dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssXXXXX"
+                seenString = dateFormatter.string(from: Date())
+            }
+            
             let newDevice = Device(
                 name: nil,
-                seen: dateFormatter.string(from: Date()),
+                seen: seenString,
                 id: nil,
                 currentUserId: requestDevice.userId,
                 pluggedIn: pluggedIn,
@@ -162,10 +189,20 @@ final class DevicesController {
         return try req.content.decode(Device.self).flatMap(to: Device.self, { (requestDevice) -> Future<Device> in
             
             let deviceId = try req.parameters.next(String.self)
-            let dateFormatter = ISO8601DateFormatter()
+            var seenString: String?
+            if #available(OSX 10.12, *) {
+                let dateFormatter = ISO8601DateFormatter()
+                seenString = dateFormatter.string(from: Date())
+            } else {
+                // Fallback on earlier versions
+                let dateFormatter = DateFormatter()
+                dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssXXXXX"
+                seenString = dateFormatter.string(from: Date())
+            }
+            
             let newDevice = Device(
                 name: requestDevice.name,
-                seen: dateFormatter.string(from: Date()),
+                seen: seenString,
                 id: nil,
                 currentUserId: requestDevice.userId,
                 pluggedIn: requestDevice.pluggedIn,
@@ -179,7 +216,8 @@ final class DevicesController {
     
     func check(_ req: Request) throws -> Future<[Device]> {
         
-        let dateFormatter = ISO8601DateFormatter()
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssXXXXX"
         
         let manyFuture: Future<[String : Device]> = try req.make(FernoClient.self).ferno.retrieveMany(req: req, queryItems: [], appendedPath: ["devices"])
         return manyFuture.map(to: Array<Device>.self, { cubeDict -> [Device] in
