@@ -1,10 +1,23 @@
 import FluentSQLite
 import Vapor
+import Ferno
+import FCM
 
 /// Called before your application initializes.
 public func configure(_ config: inout Config, _ env: inout Environment, _ services: inout Services) throws {
-    // Register providers first
-    try services.register(FluentSQLiteProvider())
+    
+    let fernoConfig = FernoConfig(basePath: Environment.get("FIREBASE_DATABASE_URL") ?? "", email: Environment.get("FIREBASE_CLIENT_EMAIL") ?? "", privateKey: Environment.get("FIREBASE_PRIVATE_KEY") ?? "")
+    services.register(fernoConfig)
+    try services.register(FernoProvider())
+    
+    let fcm = FCM(email: Environment.get("FIREBASE_CLIENT_EMAIL") ?? "",
+                  projectId: Environment.get("FIREBASE_PROJECT_ID") ?? "",
+                  key: Environment.get("FIREBASE_PRIVATE_KEY") ?? "")
+    services.register(fcm, as: FCM.self)
+    
+    let slackConfig = SlackConfig(basePath: Environment.get("SLACK_WEBHOOK_URL") ?? "")
+    services.register(slackConfig)
+    try services.register(SlackProvider())
 
     // Register routes to the router
     let router = EngineRouter.default()
@@ -16,17 +29,4 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
     // middlewares.use(FileMiddleware.self) // Serves files from `Public/` directory
     middlewares.use(ErrorMiddleware.self) // Catches errors and converts to HTTP response
     services.register(middlewares)
-
-    // Configure a SQLite database
-    let sqlite = try SQLiteDatabase(storage: .memory)
-
-    // Register the configured SQLite database to the database config.
-    var databases = DatabasesConfig()
-    databases.add(database: sqlite, as: .sqlite)
-    services.register(databases)
-
-    // Configure migrations
-    var migrations = MigrationConfig()
-    migrations.add(model: Todo.self, database: .sqlite)
-    services.register(migrations)
 }

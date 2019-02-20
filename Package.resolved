@@ -38,6 +38,24 @@
         }
       },
       {
+        "package": "FCM",
+        "repositoryURL": "https://github.com/MihaelIsaev/FCM.git",
+        "state": {
+          "branch": null,
+          "revision": "e2ac69bb2294e35f6bd05a23ed39614d71ac9fe1",
+          "version": "0.6.3"
+        }
+      },
+      {
+        "package": "Ferno",
+        "repositoryURL": "https://github.com/vapor-community/ferno.git",
+        "state": {
+          "branch": null,
+          "revision": "8e69f6e534436a330f08bba9837cd799262b98ce",
+          "version": "0.3.0"
+        }
+      },
+      {
         "package": "Fluent",
         "repositoryURL": "https://github.com/vapor/fluent.git",
         "state": {
@@ -62,6 +80,24 @@
           "branch": null,
           "revision": "6973bf50dab8dd00e4daf8cb82ca72b33f5db016",
           "version": "3.1.6"
+        }
+      },
+      {
+        "package": "Jobs",
+        "repositoryURL": "https://github.com/BrettRToomey/Jobs.git",
+        "state": {
+          "branch": null,
+          "revision": "2051cc49b64692534225ea9d347051f64ac682ee",
+          "version": "1.1.2"
+        }
+      },
+      {
+        "package": "JWT",
+        "repositoryURL": "https://github.com/vapor/jwt.git",
+        "state": {
+          "branch": null,
+          "revision": "2e225c722bf26407c1c4bd11d341e48759f46095",
+          "version": "3.0.0"
         }
       },
       {
