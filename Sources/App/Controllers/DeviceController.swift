@@ -269,7 +269,7 @@ final class DevicesController {
         
         let slackMessage = SlackMessage(
             text: message,
-            channel: "@simon",
+            channel: Environment.get("SLACK_CHANNEL") ?? "@simon",
             icon_emoji: ":passport_control:",
             username: "Battery Police"
         )
