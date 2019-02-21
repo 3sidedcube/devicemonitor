@@ -1,4 +1,5 @@
 import Vapor
+import Ferno
 
 /// Controls basic CRUD operations on Cube users.
 final class CubesController {

@@ -7,6 +7,7 @@
 
 import Vapor
 import FCM
+import Ferno
 
 /// Controls basic CRUD operations on Cube users.
 final class DevicesController {
