@@ -47,6 +47,15 @@
         }
       },
       {
+        "package": "Ferno",
+        "repositoryURL": "https://github.com/vapor-community/ferno.git",
+        "state": {
+          "branch": null,
+          "revision": "8e69f6e534436a330f08bba9837cd799262b98ce",
+          "version": "0.3.0"
+        }
+      },
+      {
         "package": "Fluent",
         "repositoryURL": "https://github.com/vapor/fluent.git",
         "state": {
