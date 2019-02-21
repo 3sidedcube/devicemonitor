@@ -12,7 +12,7 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
     
     let fcm = FCM(email: Environment.get("FIREBASE_CLIENT_EMAIL") ?? "",
                   projectId: Environment.get("FIREBASE_PROJECT_ID") ?? "",
-                  key: Environment.get("FIREBASE_PRIVATE_KEY")?.replacingOccurrences(of: "\\n", with: "\n").removingPercentEncoding ?? "")
+                  key: Environment.get("FIREBASE_PRIVATE_KEY")?.base64Decoded ?? "")
     services.register(fcm, as: FCM.self)
     
     let slackConfig = SlackConfig(basePath: Environment.get("SLACK_WEBHOOK_URL") ?? "")
