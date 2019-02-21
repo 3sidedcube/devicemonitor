@@ -17,7 +17,7 @@ let package = Package(
         .package(url: "https://github.com/MihaelIsaev/FCM.git", from: "0.6.3")
     ],
     targets: [
-        .target(name: "App", dependencies: ["FluentSQLite", "Vapor", "Jobs", "FCM"]),
+        .target(name: "App", dependencies: ["FluentSQLite", "Vapor", "Ferno", "Jobs", "FCM"]),
         .target(name: "Run", dependencies: ["App"]),
         .testTarget(name: "AppTests", dependencies: ["App"])
     ]

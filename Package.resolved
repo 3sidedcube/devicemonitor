@@ -48,11 +48,11 @@
       },
       {
         "package": "Ferno",
-        "repositoryURL": "https://github.com/vapor-community/ferno.git",
+        "repositoryURL": "https://github.com/3sidedcube/ferno.git",
         "state": {
-          "branch": null,
-          "revision": "8e69f6e534436a330f08bba9837cd799262b98ce",
-          "version": "0.3.0"
+          "branch": "jwt3",
+          "revision": "155fa23f2f2d985dbee20072e560b095f61d7b63",
+          "version": null
         }
       },
       {
