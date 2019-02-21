@@ -6,7 +6,7 @@ import Ferno
 /// Called before your application initializes.
 public func configure(_ config: inout Config, _ env: inout Environment, _ services: inout Services) throws {
     
-    let fernoConfig = FernoConfig(basePath: Environment.get("FIREBASE_DATABASE_URL") ?? "", email: Environment.get("FIREBASE_CLIENT_EMAIL") ?? "", privateKey: Environment.get("FIREBASE_PRIVATE_KEY")?.replacingOccurrences(of: "\\n", with: "\n").removingPercentEncoding ?? "")
+    let fernoConfig = FernoConfig(basePath: Environment.get("FIREBASE_DATABASE_URL") ?? "", email: Environment.get("FIREBASE_CLIENT_EMAIL") ?? "", privateKey: Environment.get("FIREBASE_PRIVATE_KEY")?.base64Decoded ?? "")
     services.register(fernoConfig)
     try services.register(FernoProvider())
     
