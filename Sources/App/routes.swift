@@ -4,8 +4,8 @@ import Jobs
 /// Register your application's routes here.
 public func routes(_ router: Router) throws {
 
-    let cubesController = CubesController()
-    router.get("cubes", use: cubesController.index)
+    let usersController = UsersController()
+    router.get("users", use: usersController.index)
     
     let devicesController = DevicesController.shared
     

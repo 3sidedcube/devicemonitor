@@ -62,7 +62,7 @@ extension Device {
         return statusString(lastUsedBy: nil)
     }
     
-    func statusString(name overrideName: String = "", lastUsedBy: Cube?) -> String {
+    func statusString(name overrideName: String = "", lastUsedBy: User?) -> String {
         
         let name = self.name ?? overrideName
         var lastUsedString = ""

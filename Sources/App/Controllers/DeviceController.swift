@@ -52,7 +52,7 @@ final class DevicesController {
             
             let fernoClient = try req.make(FernoClient.self).ferno
             
-            CubesController.fetchCubeWith(id: requestDevice.userId, using: req, callback: { (cube) in
+            UsersController.fetchCubeWith(id: requestDevice.userId, using: req, callback: { (cube) in
                 
                 guard let _cube = cube else {
                     DevicesController.sendSlackMessage("\(deviceId.removingPercentEncoding ?? deviceId) is low on battery 🔋 (\(requestDevice.batteryPercentage != nil ? "\(requestDevice.batteryPercentage!)%" : ""))", using: req)
@@ -110,7 +110,7 @@ final class DevicesController {
             
             let fernoClient = try req.make(FernoClient.self).ferno
             
-            CubesController.fetchCubeWith(id: requestDevice.userId, using: req, callback: { (cube) in
+            UsersController.fetchCubeWith(id: requestDevice.userId, using: req, callback: { (cube) in
                 
                 guard let _cube = cube else {
                     DevicesController.sendSlackMessage(onsite ? "\(deviceId.removingPercentEncoding ?? deviceId) was bought back to the office  👍🏻" : "\(deviceId.removingPercentEncoding ?? deviceId) was taken offsite! 👋🏻", using: req)
@@ -148,7 +148,7 @@ final class DevicesController {
             
             let fernoClient = try req.make(FernoClient.self).ferno
             
-            CubesController.fetchCubeWith(id: requestDevice.userId, using: req, callback: { (cube) in
+            UsersController.fetchCubeWith(id: requestDevice.userId, using: req, callback: { (cube) in
                 
                 guard let _cube = cube else {
                     DevicesController.sendSlackMessage(pluggedIn ? "\(deviceId.removingPercentEncoding ?? deviceId) was plugged back in ⚡️" : "\(deviceId.removingPercentEncoding ?? deviceId) was unplugged 🔌", using: req)
@@ -268,7 +268,7 @@ final class DevicesController {
                             return
                         }
                         
-                        CubesController.fetchCubeWith(id: userId, using: req, callback: { (cube) in
+                        UsersController.fetchCubeWith(id: userId, using: req, callback: { (cube) in
                             DevicesController.sendSlackResponse(matchedDevice.statusString(lastUsedBy: cube), response_type: "in_channel", using: req, to: responseURL)
                         })
                         
@@ -280,7 +280,7 @@ final class DevicesController {
             } else {
                 
                 do {
-                    try CubesController().index(req).do({ (cubes) in
+                    try UsersController().index(req).do({ (cubes) in
                         
                         do {
                             try self.index(req).do({ devices in
@@ -311,7 +311,7 @@ final class DevicesController {
         })
     }
     
-    private static func devicesString(_ devices: [Device], cubes: [Cube]?) -> String {
+    private static func devicesString(_ devices: [Device], cubes: [User]?) -> String {
         var baseString = """
                         All test devices! 📱
                         ```

@@ -1,9 +1,9 @@
 import FluentSQLite
 import Vapor
 
-final class Cube: Model {
+final class User: Model {
     
-    static var idKey: WritableKeyPath<Cube, Int?> = \.id
+    static var idKey: WritableKeyPath<User, Int?> = \.id
     
     typealias ID = Int
     
@@ -16,6 +16,6 @@ final class Cube: Model {
     var id: Int?
 }
 
-extension Cube: Content { }
+extension User: Content { }
 
-extension Cube: Parameter { }
+extension User: Parameter { }
