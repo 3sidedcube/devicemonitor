@@ -244,7 +244,6 @@ final class DevicesController {
     func status(_ req: Request) throws -> Future<SlackResponse> {
         
         let ferno = try req.make(FernoClient.self).ferno
-        let slack = try req.make(SlackClient.self).slack
         
         return try req.content.decode(SlackCommand.self).map(to: SlackResponse.self, { (slackCommand) -> SlackResponse in
             
@@ -307,7 +306,7 @@ final class DevicesController {
                 }
             }
             
-            return SlackResponse(text: "Checking device status...")
+            return SlackResponse(text: "Checking device status...", response_type: "in_channel")
         })
     }
     
