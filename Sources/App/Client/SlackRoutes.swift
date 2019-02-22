@@ -15,8 +15,8 @@ public struct SlackRoutes {
         self.request = request
     }
     
-    @discardableResult public func send(req: Request, payload: SlackMessage) throws -> Future<HTTPResponseStatus> {
-        let sendReq = try self.request.send(req: req, method: .POST, body: payload, headers: [:])
+    @discardableResult public func send<T: Content>(req: Request, payload: T, url: URL? = nil) throws -> Future<HTTPResponseStatus> {
+        let sendReq = try self.request.send(req: req, method: .POST, body: payload, headers: [:], url: url)
         return sendReq
     }
 }

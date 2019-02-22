@@ -16,6 +16,8 @@ final class Device: Model {
     
     typealias Database = SQLiteDatabase
     
+    var model: String?
+    
     var name: String?
     
     var seen: String?
@@ -33,6 +35,7 @@ final class Device: Model {
     init(name: String?,
          seen: String?,
          id: Int?,
+         model: String? = nil,
          currentUserId: Int? = nil,
          pluggedIn: Bool? = nil,
          offsite: Bool? = nil,
@@ -45,6 +48,7 @@ final class Device: Model {
         self.pluggedIn = pluggedIn
         self.offsite = offsite
         self.batteryPercentage = batteryPercentage
+        self.model = model
     }
 }
 
@@ -53,17 +57,28 @@ extension Device: Content { }
 extension Device: Parameter { }
 
 extension Device {
-    var statusString: String? {
-        guard let name = name else { return nil }
+    
+    var statusString: String {
+        return statusString(lastUsedBy: nil)
+    }
+    
+    func statusString(name overrideName: String = "", lastUsedBy: Cube?) -> String {
+        
+        let name = self.name ?? overrideName
+        var lastUsedString = ""
+        if let cube = lastUsedBy {
+            lastUsedString = " was last used by \(cube.name)"
+        }
+        
         switch (pluggedIn, offsite) {
         case (.some(let plugged), .some(let offsite)):
-            return name + " (\(plugged ? "Charging ⚡️" : "Unplugged 🔌"), \(offsite ? "Offsite 👋🏻" : "In the Office 🏢"))"
+            return name + lastUsedString + " (\(plugged ? "Charging ⚡️" : "Unplugged 🔌"), \(offsite ? "Offsite 👋🏻" : "In the Office 🏢"))"
         case (.some(let plugged), nil):
-            return name + " (\(plugged ? "Charging ⚡️" : "Unplugged 🔌"))"
+            return name + lastUsedString + " (\(plugged ? "Charging ⚡️" : "Unplugged 🔌"))"
         case (nil, .some(let offsite)):
-            return name + " \(offsite ? "Offsite 👋🏻" : "In the Office 🏢"))"
+            return name + lastUsedString + " \(offsite ? "Offsite 👋🏻" : "In the Office 🏢"))"
         default:
-            return name
+            return name + lastUsedString
         }
     }
 }

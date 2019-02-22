@@ -17,4 +17,5 @@ public func routes(_ router: Router) throws {
     router.post("devices", String.parameter, "offsite", use: devicesController.offsite)
     router.post("devices", String.parameter, "low_battery", use: devicesController.lowBattery)
     router.get("devices", use: devicesController.index)
+    router.post("status", use: devicesController.status)
 }

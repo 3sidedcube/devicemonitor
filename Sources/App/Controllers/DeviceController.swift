@@ -36,16 +36,10 @@ final class DevicesController {
         
         return try req.content.decode(Device.self).flatMap(to: Device.self, { (requestDevice) -> Future<Device> in
             
-            var seenString: String?
-            if #available(OSX 10.12, *) {
-                let dateFormatter = ISO8601DateFormatter()
-                seenString = dateFormatter.string(from: Date())
-            } else {
-                // Fallback on earlier versions
-                let dateFormatter = DateFormatter()
-                dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssXXXXX"
-                seenString = dateFormatter.string(from: Date())
-            }
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "YYYY-MM-DD'T'hh:mm:ssZ"
+            let seenString = dateFormatter.string(from: Date())
+            
             let newDevice = Device(
                 name: nil,
                 seen: seenString,
@@ -101,16 +95,10 @@ final class DevicesController {
         
         return try req.content.decode(Device.self).flatMap(to: Device.self, { (requestDevice) -> Future<Device> in
             
-            var seenString: String?
-            if #available(OSX 10.12, *) {
-                let dateFormatter = ISO8601DateFormatter()
-                seenString = dateFormatter.string(from: Date())
-            } else {
-                // Fallback on earlier versions
-                let dateFormatter = DateFormatter()
-                dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssXXXXX"
-                seenString = dateFormatter.string(from: Date())
-            }
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "YYYY-MM-DD'T'hh:mm:ssZ"
+            let seenString = dateFormatter.string(from: Date())
+            
             let newDevice = Device(
                 name: nil,
                 seen: seenString,
@@ -130,7 +118,7 @@ final class DevicesController {
                 }
                 
                 DevicesController.sendSlackMessage(
-                    onsite ? "\(deviceId.removingPercentEncoding ?? deviceId) was bought back to the office by \(_cube.name) @(\(_cube.slack)) 👍🏻" : "\(_cube.name) (@\(_cube.slack)) has taken \(deviceId.removingPercentEncoding ?? deviceId) offsite 👋🏻",
+                    onsite ? "\(deviceId.removingPercentEncoding ?? deviceId) was bought back to the office by \(_cube.name) (@\(_cube.slack)) 👍🏻" : "\(_cube.name) (@\(_cube.slack)) has taken \(deviceId.removingPercentEncoding ?? deviceId) offsite 👋🏻",
                     using: req
                 )
             })
@@ -145,16 +133,9 @@ final class DevicesController {
         
         return try req.content.decode(Device.self).flatMap(to: Device.self, { (requestDevice) -> Future<Device> in
             
-            var seenString: String?
-            if #available(OSX 10.12, *) {
-                let dateFormatter = ISO8601DateFormatter()
-                seenString = dateFormatter.string(from: Date())
-            } else {
-                // Fallback on earlier versions
-                let dateFormatter = DateFormatter()
-                dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssXXXXX"
-                seenString = dateFormatter.string(from: Date())
-            }
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "YYYY-MM-DD'T'hh:mm:ssZ"
+            let seenString = dateFormatter.string(from: Date())
             
             let newDevice = Device(
                 name: nil,
@@ -175,7 +156,7 @@ final class DevicesController {
                 }
                 
                 DevicesController.sendSlackMessage(
-                    pluggedIn ? "\(deviceId.removingPercentEncoding ?? deviceId) was plugged back in by \(_cube.name) @(\(_cube.slack)) ⚡️" : "\(_cube.name) (@\(_cube.slack)) has unplugged \(deviceId.removingPercentEncoding ?? deviceId) 🔌",
+                    pluggedIn ? "\(deviceId.removingPercentEncoding ?? deviceId) was plugged back in by \(_cube.name) (@\(_cube.slack)) ⚡️" : "\(_cube.name) (@\(_cube.slack)) has unplugged \(deviceId.removingPercentEncoding ?? deviceId) 🔌",
                     using: req
                 )
             })
@@ -190,21 +171,15 @@ final class DevicesController {
         return try req.content.decode(Device.self).flatMap(to: Device.self, { (requestDevice) -> Future<Device> in
             
             let deviceId = try req.parameters.next(String.self)
-            var seenString: String?
-            if #available(OSX 10.12, *) {
-                let dateFormatter = ISO8601DateFormatter()
-                seenString = dateFormatter.string(from: Date())
-            } else {
-                // Fallback on earlier versions
-                let dateFormatter = DateFormatter()
-                dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssXXXXX"
-                seenString = dateFormatter.string(from: Date())
-            }
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "YYYY-MM-DD'T'hh:mm:ssZ"
+            let seenString = dateFormatter.string(from: Date())
             
             let newDevice = Device(
                 name: requestDevice.name,
                 seen: seenString,
                 id: nil,
+                model: requestDevice.model,
                 currentUserId: requestDevice.userId,
                 pluggedIn: requestDevice.pluggedIn,
                 offsite: requestDevice.offsite,
@@ -218,7 +193,7 @@ final class DevicesController {
     func check(_ req: Request) throws -> Future<[Device]> {
         
         let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssXXXXX"
+        dateFormatter.dateFormat = "YYYY-MM-DD'T'hh:mm:ssZ"
         
         let manyFuture: Future<[String : Device]> = try req.make(FernoClient.self).ferno.retrieveMany(req: req, queryItems: [], appendedPath: ["devices"])
         return manyFuture.map(to: Array<Device>.self, { cubeDict -> [Device] in
@@ -266,6 +241,98 @@ final class DevicesController {
         return try fcm.sendMessage(req.client(), message: message)
     }
     
+    func status(_ req: Request) throws -> Future<SlackResponse> {
+        
+        let ferno = try req.make(FernoClient.self).ferno
+        let slack = try req.make(SlackClient.self).slack
+        
+        return try req.content.decode(SlackCommand.self).map(to: SlackResponse.self, { (slackCommand) -> SlackResponse in
+            
+            guard let responseURLString = slackCommand.response_url, let responseURL = URL(string: responseURLString) else {
+                return SlackResponse(text: "Invalid request!")
+            }
+            
+            if let text = slackCommand.text, !text.isEmpty {
+                
+                do {
+                    let futureDevice: Future<[String: Device]> = try ferno.retrieveMany(req: req, queryItems: [.orderBy("name"), .equalTo(text)], appendedPath: ["devices"])
+                    futureDevice.do({ (device) in
+                        
+                        guard let matchedDevice = device.values.first else {
+                            DevicesController.sendSlackResponse("Failed to find device named \(text)", response_type: "ephemeral", using: req, to: responseURL)
+                            return
+                        }
+                        
+                        guard let userId = matchedDevice.userId else {
+                            DevicesController.sendSlackResponse(matchedDevice.statusString(lastUsedBy: nil), response_type: "in_channel", using: req, to: responseURL)
+                            return
+                        }
+                        
+                        CubesController.fetchCubeWith(id: userId, using: req, callback: { (cube) in
+                            DevicesController.sendSlackResponse(matchedDevice.statusString(lastUsedBy: cube), response_type: "in_channel", using: req, to: responseURL)
+                        })
+                        
+                    }).catch({ (error) in
+                        DevicesController.sendSlackResponse("Failed to find device named \(text)", response_type: "ephemeral", using: req, to: responseURL)
+                    })
+                }
+                
+            } else {
+                
+                do {
+                    try CubesController().index(req).do({ (cubes) in
+                        
+                        do {
+                            try self.index(req).do({ devices in
+                                DevicesController.sendSlackResponse(DevicesController.devicesString(devices, cubes: cubes), response_type: "in_channel", using: req, to: responseURL)
+                            }).catch({ error in
+                                DevicesController.sendSlackResponse("Failed to get devices", response_type: "ephemeral", using: req, to: responseURL)
+                            })
+                        } catch {
+                            DevicesController.sendSlackResponse("Failed to get devices", response_type: "ephemeral", using: req, to: responseURL)
+                        }
+                        
+                    })
+                } catch {
+                    
+                    do {
+                        try self.index(req).do({ devices in
+                            DevicesController.sendSlackResponse(DevicesController.devicesString(devices, cubes: nil), response_type: "in_channel", using: req, to: responseURL)
+                        }).catch({ error in
+                            DevicesController.sendSlackResponse("Failed to get devices", response_type: "ephemeral", using: req, to: responseURL)
+                        })
+                    } catch {
+                        DevicesController.sendSlackResponse("Failed to get devices", response_type: "ephemeral", using: req, to: responseURL)
+                    }
+                }
+            }
+            
+            return SlackResponse(text: "Checking device status...")
+        })
+    }
+    
+    private static func devicesString(_ devices: [Device], cubes: [Cube]?) -> String {
+        var baseString = """
+                        All test devices! 📱
+                        ```
+                        """
+        devices.forEach { (device) in
+            baseString.append(device.statusString(lastUsedBy: cubes?.first(where: { $0.id == device.userId })))
+        }
+        baseString.append("```")
+        return baseString
+    }
+    
+    private static func sendSlackResponse(_ response: String, response_type: String, using request: Request, to url: URL) {
+        
+        let slackResponse = SlackResponse(text: response, response_type: response_type)
+        do {
+            try request.make(SlackClient.self).slack.send(req: request, payload: slackResponse, url: url)
+        } catch {
+            print("Failed to send slack response")
+        }
+    }
+
     private static func sendSlackMessage(_ message: String, using request: Request) {
         
         let slackMessage = SlackMessage(

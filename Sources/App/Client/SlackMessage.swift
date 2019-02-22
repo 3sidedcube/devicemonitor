@@ -17,6 +17,8 @@ public final class SlackMessage: Content {
     
     let username: String
     
+    var link_names: Int = 1
+    
     init(text: String, channel: String, icon_emoji: String, username: String) {
         self.text = text
         self.channel = channel

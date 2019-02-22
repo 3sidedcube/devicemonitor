@@ -8,13 +8,13 @@
 import Vapor
 
 public protocol SlackRequest {
-    func send<T: Content>(req: Request, method: HTTPMethod, body: T, headers: HTTPHeaders) throws -> Future<HTTPResponseStatus>
+    func send<T: Content>(req: Request, method: HTTPMethod, body: T, headers: HTTPHeaders, url: URL?) throws -> Future<HTTPResponseStatus>
 }
 
 public class SlackAPIRequest: SlackRequest {
     
-    public func send<T>(req: Request, method: HTTPMethod, body: T, headers: HTTPHeaders) throws -> EventLoopFuture<HTTPResponseStatus> where T : Content {
-        let request = try self.createRequest(method: method, body: body, headers: headers)
+    public func send<T>(req: Request, method: HTTPMethod, body: T, headers: HTTPHeaders, url: URL?) throws -> EventLoopFuture<HTTPResponseStatus> where T : Content {
+        let request = try self.createRequest(method: method, body: body, headers: headers, url: url)
         return self.httpClient.send(request).map(to: HTTPResponseStatus.self, { (response) -> HTTPResponseStatus in
             guard response.http.status == .ok else { throw SlackError.requestFailed }
             return response.http.status
@@ -31,13 +31,13 @@ public class SlackAPIRequest: SlackRequest {
 }
 
 extension SlackAPIRequest {
-    private func createRequest<T: Content>(method: HTTPMethod, body: T, headers: HTTPHeaders) throws -> Request {
+    private func createRequest<T: Content>(method: HTTPMethod, body: T, headers: HTTPHeaders, url: URL?) throws -> Request {
         let completePath = self.basePath
         let request = Request(using: self.httpClient.container)
         try request.content.encode(body)
         request.http.method = method
         request.http.headers = headers
-        request.http.url = URL(string: completePath)!
+        request.http.url = url ?? URL(string: completePath)!
         return request
     }
 }
