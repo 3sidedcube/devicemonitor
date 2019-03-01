@@ -315,9 +315,10 @@ final class DevicesController {
                         All test devices! 📱
                         ```
                         """
-        devices.forEach { (device) in
-            baseString.append(device.statusString(lastUsedBy: cubes?.first(where: { $0.id == device.userId })))
-        }
+        let deviceStrings = devices.map({ (device) -> String in
+            device.statusString(lastUsedBy: cubes?.first(where: { $0.id == device.userId }))
+        })
+        baseString.append(contentsOf: deviceStrings.joined(separator: "\n"))
         baseString.append("```")
         return baseString
     }
