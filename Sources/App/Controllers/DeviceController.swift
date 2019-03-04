@@ -37,7 +37,7 @@ final class DevicesController {
         return try req.content.decode(Device.self).flatMap(to: Device.self, { (requestDevice) -> Future<Device> in
             
             let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "YYYY-MM-DD'T'HH:mm:ssZ"
+            dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
             let seenString = dateFormatter.string(from: Date())
             
             let newDevice = Device(
@@ -96,7 +96,7 @@ final class DevicesController {
         return try req.content.decode(Device.self).flatMap(to: Device.self, { (requestDevice) -> Future<Device> in
             
             let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "YYYY-MM-DD'T'HH:mm:ssZ"
+            dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
             let seenString = dateFormatter.string(from: Date())
             
             let newDevice = Device(
@@ -134,7 +134,7 @@ final class DevicesController {
         return try req.content.decode(Device.self).flatMap(to: Device.self, { (requestDevice) -> Future<Device> in
             
             let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "YYYY-MM-DD'T'HH:mm:ssZ"
+            dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
             let seenString = dateFormatter.string(from: Date())
             
             let newDevice = Device(
@@ -172,7 +172,7 @@ final class DevicesController {
             
             let deviceId = try req.parameters.next(String.self)
             let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "YYYY-MM-DD'T'HH:mm:ssZ"
+            dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
             let seenString = dateFormatter.string(from: Date())
             
             let newDevice = Device(
@@ -193,7 +193,7 @@ final class DevicesController {
     func check(_ req: Request) throws -> Future<[Device]> {
         
         let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "YYYY-MM-DD'T'HH:mm:ssZ"
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
         
         let manyFuture: Future<[String : Device]> = try req.make(FernoClient.self).ferno.retrieveMany(req: req, queryItems: [], appendedPath: ["devices"])
         return manyFuture.map(to: Array<Device>.self, { cubeDict -> [Device] in
